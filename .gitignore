@@ -1,0 +1,29 @@
+# Archivos de Python compilados
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Archivos de configuración de VS Code
+.vscode/
+
+# Logs y archivos temporales
+logs/
+*.log
+*.out
+*.tmp
+
+# Archivos de imágenes capturadas (si no quieres subirlas)
+images/
+
+# Configuración de dependencias
+config/settings.py  # Si contiene información sensible
+
+# Archivos de sistema de MacOS y Linux
+.DS_Store
+*.swp
