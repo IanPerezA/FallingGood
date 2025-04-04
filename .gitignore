@@ -20,6 +20,7 @@ logs/
 
 # Archivos de imágenes capturadas (si no quieres subirlas)
 images/
+scripts/img
 
 # Configuración de dependencias
 config/settings.py  # Si contiene información sensible
