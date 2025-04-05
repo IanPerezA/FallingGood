@@ -8,6 +8,7 @@ __pycache__/
 venv/
 env/
 .venv/
+venv-tf/
 
 # Archivos de configuración de VS Code
 .vscode/

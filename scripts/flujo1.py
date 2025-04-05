@@ -18,7 +18,7 @@ sensor_sonido = DigitalInputDevice(SENSOR_SONIDO_GPIO)
 # 🔹 FUNCIÓN PARA CAPTURAR IMAGEN
 def capturar_imagen():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    output_file = CARPETA_IMAGENES / f"captura_{timestamp}.jpg"
+    output_file = CARPETA_IMAGENES / f"captura.jpg"
 
     print(f"📸 Capturando imagen: {output_file.name}")
     try:
