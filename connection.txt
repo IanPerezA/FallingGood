@@ -1,0 +1,92 @@
+const Alexa = require('ask-sdk-core');
+const questions = [
+    "¿Tienes dificultad para hablar o entender lo que digo?",
+    "Intenta levantar ambos brazos al mismo tiempo. ¿Uno de ellos se siente más débil o cae sin fuerza?",
+    "¿Sientes mareo o dificultad para mantener el equilibrio?",
+    "¿Sientes un dolor de cabeza fuerte y repentino, diferente a los que has tenido antes?"
+];
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+        sessionAttributes.currentQuestionIndex = 0;
+        sessionAttributes.yesCount = 0;
+
+        handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+       const speakOutput = Voy a hacerte algunas preguntas para revisar tu estado de salud. Responde diciendo la palabra contesto, seguido de 'sí', 'no' o 'no estoy seguro'. ${questions[0]};
+
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(questions[0])
+            .getResponse();
+    }
+};
+
+const AnswerIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+               Alexa.getIntentName(handlerInput.requestEnvelope) === 'AnswerIntent';
+    },
+    handle(handlerInput) {
+        const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+        let currentQuestionIndex = sessionAttributes.currentQuestionIndex || 0;
+        let yesCount = sessionAttributes.yesCount || 0;
+
+        const userResponse = Alexa.getSlotValue(handlerInput.requestEnvelope, 'response') || "";
+        const lowerResponse = userResponse.toLowerCase();
+
+        if (lowerResponse.includes("si")) {
+            yesCount++;
+        }
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            sessionAttributes.currentQuestionIndex = currentQuestionIndex;
+            sessionAttributes.yesCount = yesCount;
+            handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+            return handlerInput.responseBuilder
+                .speak(questions[currentQuestionIndex])
+                .reprompt(questions[currentQuestionIndex])
+                .getResponse();
+        } else {
+            // Evaluar el resultado final
+            const finalMessage = yesCount > 0 
+                ? "No te preocupes, avisaré a 'Hija Laura' sobre tu estado."
+                : "OK, parece que todo está correcto.";
+
+            return handlerInput.responseBuilder
+                .speak(finalMessage)
+                .withShouldEndSession(true)
+                .getResponse();
+        }
+    }
+};
+
+const FallbackIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+               Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = "No entendí tu respuesta. Por favor, responde sí, no o no estoy seguro.";
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt("Por favor, responde sí, no o no estoy seguro.")
+            .getResponse();
+    }
+};
+
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        AnswerIntentHandler,
+        FallbackIntentHandler
+    )
+    .lambda();
